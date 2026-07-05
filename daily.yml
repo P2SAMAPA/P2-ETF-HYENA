@@ -1,0 +1,25 @@
+name: Daily Hyena Engine Run
+
+on:
+  schedule:
+    - cron: "30 00 * * 1-6"   # 23:30 UTC Mon-Fri
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180   # longer sequences (L=100+) than other engines in the suite
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run trainer
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python trainer.py
